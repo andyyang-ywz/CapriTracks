@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %}Welcome to Capri Tracks{% endblock %}
+
+{% block content %}
+<div class="w-11/12 md:w-5/6 mx-auto min-h-screen flex items-center">
+   <div class="w-full text-center">
+      <h1 class="font-bold mb-3 text-[34px] leading-10 sm:text-4xl lg:text-[42px] xl:text-5xl text-balance">TRACK YOUR TIME AND HABITS WITH</h1>
+      <h2 class="font-bold text-xl md:text-2xl lg:text-3xl">-- Capri Tracks --</h2>
+      <div class="mt-8 italic text-slate-300 text-[13px] md:text-sm lg:text-[15px] text-balance">
+         <p class="mb-1">Track your habit and time to make sure you are using it efficiently and staying productive. </p>
+         <p>"Progress is not achieved by luck or accident, but by working on yourself daily"</p>
+         <p>-- Epictetus --</p>
+      </div>
+      <a href="{% url 'Habit:main' %}" class="inline-block border border-slate-500 rounded-sm mt-6 px-10 py-2 font-semibold text-sm md:text-base lg:text-lg text-slate-500 transition-all hover:bg-slate-800 hover:text-white hover:scale-105 hover:shadow-2xl hover:shadow-[#161E3B]">Start Tracking</a>
+   </div>
+</div>
+{% endblock %}

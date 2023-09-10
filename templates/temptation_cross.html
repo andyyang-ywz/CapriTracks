@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block title %}Temptation Cross{% endblock %}
+
+{% block content %}
+<div class="w-11/12 mx-auto py-24">
+   <h1 class="mt-10 text-4xl text-center font-bold">TEMPTATION CROSS</h1>
+   <div class="flex flex-wrap gap-3 justify-evenly mt-20">
+      {% with ''|center:156 as range %}
+      {% for _ in range %}
+         {% if forloop.counter <= 8 %}
+         <div class="flex justify-center items-center w-20 h-20 border-[3px] border-green-600 bg-green-600 rounded-lg select-none cursor-pointer">
+            <h1 class="text-4xl text-white font-bold">{{ forloop.counter }}</h1>
+         </div>
+         {% else %}
+         <div class="flex justify-center items-center w-20 h-20 border-[3px] border-slate-700 rounded-lg select-none cursor-pointer">
+            <h1 class="text-4xl font-bold">{{ forloop.counter }}</h1>
+         </div>
+         {% endif %}
+      {% endfor %}
+      {% endwith %}
+   </div>
+</div>
+{% endblock %}

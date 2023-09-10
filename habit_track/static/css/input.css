@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  scroll-behavior: smooth;
+}
+
+.filter-to-gray {
+  filter: invert(44%) sepia(50%) saturate(226%) hue-rotate(176deg)
+    brightness(90%) contrast(81%);
+}
+
+.filter-to-cyan {
+  filter: invert(20%) sepia(99%) saturate(2112%) hue-rotate(183deg)
+    brightness(97%) contrast(98%);
+}
+
+.filter-to-white {
+  filter: brightness(0) invert(1);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.with-custom-scrollbar::-webkit-scrollbar {
+  width: 7.5px;
+}
+
+/* Track */
+.with-custom-scrollbar::-webkit-scrollbar-track {
+  background: #054364;
+}
+
+/* Handle */
+.with-custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #0369a1;
+  border-radius: 3px;
+}
+
+/* Handle on hover */
+.with-custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0375b4;
+}
+
+:not(.with-custom-scrollbar)::-webkit-scrollbar {
+  width: 16px;
+}
+
+/* Track */
+:not(.with-custom-scrollbar)::-webkit-scrollbar-track {
+  background: #02071b;
+  box-sizing: border-box;
+}
+
+/* Handle */
+:not(.with-custom-scrollbar)::-webkit-scrollbar-thumb {
+  background: #1c2a4e;
+  border-radius: 14px;
+  border: 3px solid #02071b;
+}
+
+/* Handle on hover */
+:not(.with-custom-scrollbar)::-webkit-scrollbar-thumb:hover {
+  background: #203059;
+}

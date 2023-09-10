@@ -1,0 +1,40 @@
+<div class="hidden items-center justify-center fixed top-0 left-0 w-full min-h-screen z-[100]" id="add_time_track_form_wrapper">
+   <div class="fixed top-0 left-0 w-full h-full bg-neutral-900 opacity-0 shadow-box-hover transition-all" id="dark_bg"></div>
+   <div class="z-10 bg-slate-800 rounded-xl px-10 py-14 scale-[0.85] opacity-0 transition-all duration-300" id="main_form">
+      <form action="{% url 'TimeTrack:add' %}" method="POST">
+         {% csrf_token %}
+         <h2 class="font-semibold text-2xl mb-5">New Tracks</h2>
+         <input type="text" class="hidden" name="date_for">
+         <div class="mb-4">
+            <label for="{{ form.id_for_name }}" class="text-sm pb-1">Name: </label>
+            {{ form.name }}
+         </div>
+         <div class="mb-4">
+            <label for="{{ form.id_for_time }}" class="text-sm pb-1">Minutes: </label>
+            {{ form.time }}
+         </div>
+         <div class="mb-7">
+            <label class="text-sm pb-1">Productivity Level: </label>
+            {{ form.level }}
+            <div class="relative">
+               <p class="block w-[400px] bg-transparent border border-slate-700 rounded-sm p-2 text-sm cursor-pointer"
+                  id="time_track_form_input">Select Level</p>
+               <div
+                  class="hidden absolute top-full left-0 bg-slate-800 w-[400px] -translate-y-5 opacity-0 cursor-pointer transition-all duration-300"
+                  id="time_track_form_select">
+                  <span class="block w-full text-sm p-3 border-b border-slate-700">Productive</span>
+                  <span class="block w-full text-sm p-3 border-b border-slate-700">Unproductive</span>
+                  <span class="block w-full text-sm p-3 border-b border-slate-700">Neutral</span>
+               </div>
+            </div>
+         </div>
+         <div>
+            <button
+               class="bg-[#2e3f5b] rounded-sm px-10 py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-[#3e5479] hover:text-white">Track</button>
+            <button
+               class="bg-slate-700 rounded-sm ml-2 px-10 py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-slate-600 hover:text-white"
+               type="button">Cancel</button>
+         </div>
+      </form>
+   </div>
+</div>

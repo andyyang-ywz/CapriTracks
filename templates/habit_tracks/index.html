@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+{% block title %}Welcome to Capri Tracks{% endblock %}
+
+{% block content %}
+<div class="w-11/12 md:w-5/6 mx-auto py-28">
+   <div class="flex justify-between mb-16">
+      <h1 class="font-semibold text-4xl">Habit List</h1>
+      <button class="bg-sky-800 rounded-sm px-6 py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-sky-700 hover:text-white" id="new_habit_btn">Add New Habit To Track</button>
+   </div>
+   <div class="md:flex flex-wrap justify-between">
+      {% for habit in habits %}
+      <a href="{% url 'Habit:tracking_page' user.username habit.name monday|date:'Y-m-d' %}" class="w-full sm:w-5/6 md:w-[49%] bg-slate-800 border border-slate-400 rounded-md mb-5 p-7 cursor-pointer transition-all hover:shadow-box-hover hover:scale-[1.02]">
+         <h1 class="font-semibold mb-2">
+            <span class="text-2xl">{{ habit.name }}</span>
+            <span class="text-slate-200 pl-3">{{ habit.habit_type }}</span>
+         </h1>
+         <p class="text-[13px] text-slate-200 italic">{{ habit.description }}</p>
+      </a>
+      {% endfor %}
+      {% if habits|length == 0 %}
+      <p>No habit is found. Please create one and it will showed up here.</p>
+      {% endif %}
+   </div>
+</div>
+
+<div class="fixed top-0 left-0 w-full min-h-screen z-[90] hidden justify-center items-center" id="habit_form">
+   <div class="absolute z-[100] w-[477px] bg-slate-800 rounded-lg px-7 py-10 opacity-0 -translate-y-24 transition-all duration-500" id="form">
+      <h1 class="font-semibold text-[27px] mb-5">Add New Habit</h1>
+      <form method="POST">
+         {% csrf_token %}
+         <div class="mb-4">
+            <label for="{{ form.name.id_for_label }}" class="font-semibold">Habit Name:</label>
+            {{ form.name }}
+            <small class="text-red-400">{{ form.name.errors }}</small>
+         </div>
+         <div class="mb-4">
+            <label for="{{ form.habit_type.id_for_label }}" class="font-semibold">Habit Type:</label>
+            {{ form.habit_type }}
+            <div class="relative">
+               <div class="w-full bg-transparent border border-slate-600 rounded-sm mt-2 mb-1 p-2 text-sm text-slate-300 cursor-pointer" id="habit_type_input">
+                  Select Type</div>
+               <div class="hidden absolute top-full left-0 w-full bg-slate-700 text-sm border-t border-x border-slate-800 rounded-md opacity-0 -translate-y-5 cursor-pointer transition-all duration-300" id="habit_type_select">
+                  <span class="block w-full border-b border-slate-800 p-3">Self-Improvement</span>
+                  <span class="block w-full border-b border-slate-800 p-3">Ritual</span>
+                  <span class="block w-full border-b border-slate-800 p-3">Killing Bad Habits</span>
+                  <span class="block w-full border-b border-slate-800 p-3">Family</span>
+               </div>
+            </div>
+            <small class="text-red-400">{{ form.habit_type.errors }}</small>
+         </div>
+         <div class="mb-4">
+            <label for="{{ form.description.id_for_label }}" class="font-semibold">Habit Description:</label>
+            {{ form.description }}
+            <small class="text-red-400">{{ form.description.errors }}</small>
+         </div>
+         <div class="flex justify-end">
+            <button class="border border-slate-600 rounded-sm px-5 py-2 text-sm transition-all hover:bg-slate-700">Create!!</button>
+         </div>
+      </form>
+   </div>
+   <div class="fixed w-full top-0 min-h-screen bg-neutral-900 opacity-0 transition-all duration-300 dark_bg"></div>
+</div>
+{% endblock %}

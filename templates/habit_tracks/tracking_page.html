@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+{% block title %}Welcome to Capri Tracks{% endblock %}
+
+{% block content %}
+
+{% load static %}
+{% load custom_tags %}
+
+<div class="border-b-2 border-slate-700">
+   <div class="w-11/12 md:w-5/6 mx-auto pt-28 pb-10" id="habit_info">
+      <h1 class="font-semibold text-2xl md:text-3xl lg:text-4xl">{{ habit_tracked.name }}</h1>
+      <p class="w-2/3 my-4 text-slate-200 text-[13px] md:text-sm lg:text-base italic">{{ habit_tracked.description }}</p>
+      {% include 'habit_tracks/description_form.html' %}
+      <button class="bg-sky-800 rounded-sm px-5 py-2 text-sm font-semibold transition-all hover:bg-sky-700" id="edit_description_button">Edit Description</button>
+   </div>
+</div>
+
+<div class="w-11/12 md:w-5/6 mx-auto pt-12 pb-24">
+   <div class="md:flex justify-between items-center">
+      <div class="mb-5 md:mb-0">
+         <a href="{% url 'Habit:tracking_page' user.username habit_tracked.name today_timeframe|date:'Y-m-d' %}" 
+            class="{% if timeframe_type == 'Weekly' %} bg-sky-800 {% else %} bg-slate-800 {% endif %} 
+            border border-sky-900 rounded-full px-5 py-2 text-[13px] md:text-sm">Weekly</a>
+         <a href="{% url 'Habit:tracking_page' user.username habit_tracked.name today_timeframe|date:'Y-m' %}"
+            class="{% if timeframe_type == 'Monthly' %} bg-sky-800 {% else %} bg-slate-800 {% endif %} 
+            border border-sky-900 rounded-full px-5 py-2 text-[13px] md:text-sm ml-2">Monthly</a>
+      </div>
+      <div class="flex items-center gap-5">
+         <p class="font-bold md:text-lg">Timeline <span class="ml-3">:</span></p>
+         <div class="relative">
+            <div id="timeline_input" class="bg-sky-950 border border-sky-900 rounded-sm p-2 md:p-3 pr-16 md:pr-16 font-semibold text-[13px] md:text-sm cursor-pointer">{{ current_timeframe }}</div>
+            <div id="timeline_select" class="absolute hidden top-full left-0 w-full max-h-[250px] overflow-auto z-10 bg-[#0a3857] rounded-sm text-[13px] md:text-sm opacity-0 -translate-y-5 transition duration-500 with-custom-scrollbar">
+               {% if timeframe_type == 'Weekly' %}
+               <div class="timline_select_option">
+                  {% for weektime in weekly_menu %}
+                  <a href="{% url 'Habit:tracking_page' user.username habit_tracked.name  weektime.monday|date:'Y-m-d' %}" class="block border-b border-sky-800 p-3 hover:bg-sky-950">{{ weektime.monday|date:'j F Y' }} - {{ weektime.sunday|date:'j F Y' }}</a>
+                  {% endfor %}
+               </div>
+               {% elif timeframe_type == 'Monthly' %}
+               <div class="timline_select_option">
+                  {% for month_time in monthly_menu %}
+                  <a href="{% url 'Habit:tracking_page' user.username habit_tracked.name  month_time|date:'Y-m' %}" class="block border-b border-sky-800 p-3 hover:bg-sky-950">{{ month_time|date:'F Y' }}</a>
+                  {% endfor %}
+               </div>
+               {% endif %}
+            </div>
+         </div>
+      </div>
+   </div>
+   <p class="text-xs text-slate-200 p-3 pb-0">Click the box to check your habits. (Can only be done for today's and yesterday's check)</p>
+
+
+   {% if timeframe_type == 'Weekly' %}
+   <div class="flex justify-center gap-3 flex-wrap mt-10 transition-all duration-200 tracks_wrapper" id="weekly_tracks">
+      {% with ''|center:7 as range %}
+      {% for x in range %}
+      <div class="relative flex items-center justify-center min-w-[130px] md:min-w-[145px] max-w-[150px] overflow-hidden border border-slate-600 rounded-md py-12 md:py-14 font-bold md:text-lg
+      {% if forloop.counter0 == today_day_index or forloop.counter == today_day_index %}
+         activate_form
+      {% endif %}
+      {% if forloop.counter0 <= today_day_index %}
+         {% if day_num_start|add:forloop.counter0 in habit_checks %}
+            bg-sky-600
+         {% else %}
+            {% if forloop.counter0 == today_day_index %}
+               {% if is_checked %}
+                  bg-slate-600
+               {% else %}
+                  bg-slate-800
+               {% endif %}
+            {% else %}
+               bg-slate-600
+            {% endif %}
+         {% endif %} 
+      {% else %} bg-neutral-900
+      {% endif %} transition-all hover:scale-[1.12] cursor-pointer">
+         {% if forloop.counter0 == today_day_index or forloop.counter == today_day_index %}
+         <div class="absolute -translate-y-[100px] transition-all duration-500">
+            <form action="{% url 'Habit:check_habit' user.username habit_tracked.name %}" method="POST">
+               {% csrf_token %}
+               <input type="text" class="hidden" value="{{ day_num_start|add:forloop.counter0 }}" name="day_num">
+               {% if day_num_start|add:forloop.counter0 in habit_checks %}
+               <button type="button" class="bg-green-400 border-2 border-white rounded-full p-3"><img src="{% static '/image/check.png' %}" class="w-4 filter-to-white"></button>
+               {% else %}
+               <button name="check" class="border-2 border-white rounded-full p-3 hover:bg-slate-700"><img src="{% static '/image/check.png' %}" class="w-4 filter-to-white"></button>
+               {% endif %}
+               <button name="uncheck" class="border-2 border-white rounded-full p-3 hover:bg-slate-700"><img src="{% static '/image/cross.png' %}" class="w-4 filter-to-white"></button>
+            </form>
+         </div>
+         {% endif %}
+         <p class="absolute transition-all duration-500">{{ forloop.counter0|get_day_name }}</p>
+      </div>
+      {% endfor %}
+      {% endwith %}
+   </div>
+   {% endif %}
+
+   {% if timeframe_type == 'Monthly' %}
+   <div class="flex justify-center gap-7 md:gap-5 lg:gap-3 flex-wrap mt-10 transition-all duration-200 tracks_wrapper" id="monthly_tracks">
+      {% with ''|center:31 as range %}
+      {% for _ in range %}
+      <div class="relative flex items-center justify-center min-h-[80px] max-h-[81px] md:min-w-[125px] md:max-w-[126px] aspect-square overflow-hidden border border-slate-600 rounded-md font-bold md:text-lg
+      {% if forloop.counter0 == today_day_index or forloop.counter == today_day_index %}
+         activate_form
+      {% endif %}
+
+      {% if forloop.counter0 <= today_day_index %}
+         {% if day_num_start|add:forloop.counter0 in habit_checks %}
+            bg-sky-600
+         {% else %}
+            {% if forloop.counter0 == today_day_index %}
+               {% if is_checked %}
+                  bg-slate-600
+               {% else %}
+                  bg-slate-800
+               {% endif %}
+            {% else %}
+               bg-slate-600
+            {% endif %}
+         {% endif %} 
+      {% else %} bg-neutral-900
+      {% endif %} transition-all hover:scale-[1.12] cursor-pointer">
+         {% if forloop.counter0 == today_day_index or forloop.counter == today_day_index %}
+         <div class="absolute -translate-y-[100px] transition-all duration-500">
+            <form action="{% url 'Habit:check_habit' user.username habit_tracked.name %}" method="POST">
+               {% csrf_token %}
+               <input type="text" class="hidden" value="{{ day_num_start|add:forloop.counter0 }}" name="day_num">
+               <input type="text" class="hidden" value="test" name="is_monthly">
+               {% if day_num_start|add:forloop.counter0 in habit_checks %}
+               <button type="button" class="bg-green-400 border-2 border-white rounded-full p-3"><img
+                     src="{% static '/image/check.png' %}" class="w-4 filter-to-white"></button>
+               {% else %}
+               <button name="check" class="border-2 border-white rounded-full p-3 hover:bg-slate-700"><img
+                     src="{% static '/image/check.png' %}" class="w-4 filter-to-white"></button>
+               {% endif %}
+               <button name="uncheck" class="border-2 border-white rounded-full p-3 hover:bg-slate-700"><img
+                     src="{% static '/image/cross.png' %}" class="w-4 filter-to-white"></button>
+            </form>
+         </div>
+         {% endif %}
+         <p class="absolute transition-all duration-500">{{ forloop.counter }}</p>
+      </div>
+      {% endfor %}
+      {% endwith %}
+   </div>
+   {% endif %}
+</div>
+
+{% if messages %}
+{% for message in messages %}
+   {% with message|jsonify as flash_mess %}
+   {% if flash_mess.date is not None %}
+      <div class="fixed flex justify-center items-center top-0 left-0 w-full min-h-screen z-[100]" id="check_flash_wrapper">
+         <div class="fixed w-full h-full bg-neutral-900 opacity-50 transition-all" id="dark_bg"></div>
+         <div class="relative w-[400px] z-10 bg-sky-950 rounded-xl shadow-box-hover transition-all duration-300 animate-appear" id="main_message">
+            <img src="{% static 'image/cross.png' %}" class="absolute top-4 right-4 w-4 cursor-pointer filter-to-gray" id="close_button">
+            <div class="border-b border-slate-300 text-center pt-10 pb-7">
+               <h1 class="italic font-bold text-xl lg:text-2xl">Capri Tracks</h1>
+            </div>
+            <div class="px-10 py-14 pt-7">
+               <p class="italic mb-3 text-slate-200 text-sm">Congratulation!! Thank to yourself because you have been consistent on doing/not-doing this habit!!</p>
+               <p class="text-3xl">🥳🥳🎉🎊</p>
+               <p class="mt-3 font-semibold">Date Completed: {{ flash_mess.date }}</p>
+            </div>
+         </div>
+      </div>
+      {% endif %}
+      {% endwith %}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

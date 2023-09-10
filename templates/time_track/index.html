@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+{% block title %}Welcome to Capri Tracks{% endblock %}
+
+{% block content %}
+
+{% load static %}
+{% load custom_tags %}
+
+<div class="w-11/12 md:w-5/6 mx-auto py-28">
+   <div class="mb-10 mt-4">
+      <h1 class="font-semibold">
+         <span class="text-3xl md:text-4xl">Time Track</span> 
+         <span class="block md:inline text-xl md:text-2xl text-slate-300 md:pl-5 mt-2">21 August 2023 - 27 August 2023</span>
+      </h1>
+      <div class="flex gap-5 mt-7">
+         <a href="{% url 'TimeTrack:main' last_week|date:'Y-m-d' %}" class="flex justify-center items-center gap-3 w-[175px] bg-slate-700 rounded-sm py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-[#3a4b61] hover:text-white">
+            <img src="{% static 'image/arrow.png' %}" class="w-3 filter-to-white rotate-180">
+            <span>Previous Week</span>
+         </a>
+         {% if not is_today_in_thisweek %}
+         <a href="{% url 'TimeTrack:main' next_week|date:'Y-m-d' %}" class="flex justify-center items-center gap-3 w-[175px] bg-slate-700 rounded-sm py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-[#3a4b61] hover:text-white">
+            <span>Next Week</span>
+            <img src="{% static 'image/arrow.png' %}" class="w-3 filter-to-white">
+         </a>
+         {% endif %}
+      </div>
+   </div>
+
+   <div class="mb-5 text-sm">
+      <p class="font-semibold">Shift + Scroll to scroll left and right</p>
+      <p>Click the name of activity to delete the tracks</p>
+   </div>
+   <div>
+      <div class="flex justify-between mb-5" id="scroll_helper">
+         <div class="flex items-center gap-3">
+            <button type="button" class="bg-slate-800 px-5 md:px-8 py-2 border transition-all border-slate-600 shadow-xl text-sm hover:bg-[#233045]" data-scroll-direction="start">Start</button>
+            <button type="button" class="bg-slate-800 px-5 md:px-8 py-2 border transition-all border-slate-600 shadow-xl hover:pl-5 hover:pr-[44px]" data-scroll-direction="left"><img src="{% static 'image/arrow.png' %}" class="w-4 md:w-5 filter-to-white rotate-180"></button>
+         </div>
+         <div class="flex items-center gap-3">
+            <button type="button" class="bg-slate-800 px-5 md:px-8 py-2 border transition-all border-slate-600 shadow-xl hover:pr-5 hover:pl-[44px]" data-scroll-direction="right"><img src="{% static 'image/arrow.png' %}" class="w-4 md:w-5 filter-to-white"></button>
+            <button type="button" class="bg-slate-800 px-5 md:px-8 py-2 border transition-all border-slate-600 shadow-xl text-sm hover:bg-[#233045]" data-scroll-direction="end">End</button>
+         </div>
+      </div>
+      <div class="relative">
+         <div class="absolute top-0 left-0 h-full w-[50px] md:w-[100px] z-10 hidden justify-start items-center bg-gradient-to-r from-slate-900 to-transparent" id="fade_gradient_left"></div>
+         <div class="flex gap-5 overflow-auto hide-scrollbar scroll-smooth" id="track_wrapper">
+            {% for time in time_tracks %}
+            <div class="w-[330px] md:w-[370px] flex-shrink-0 bg-slate-800 border border-slate-700 rounded-xl mx-auto sm:mx-0 mb-3 p-2 shadow-3xl transition-all hover:bg-[#222f44] relative">
+               <div class="border-b border-slate-600 p-5">
+                  <h2 class="font-bold text-2xl">{{ time.date|date:'l' }}</h2>
+                  <p class="text-slate-300 italic">{{ time.date|date:'j F Y' }}</p>
+               </div>
+               <div class="p-5 mb-12">
+                  <h2 class="font-bold text-lg mb-2">Time Spent</h2>
+                  {% for tracks in time.tracks %}
+                  <div class="mb-3 text-sm text-slate-100">
+                     <h3 class="font-semibold text-base">{{ tracks.0 }}: <span class="text-xs text-slate-300 total_time_placeholder">{{ tracks.1|total_time }}</span></h3>
+                     <div class="track_placeholder">
+                        {% for track in tracks.1 %}
+                        <p>
+                           <a class="hover:text-red-300 cursor-pointer" href="{% url 'TimeTrack:delete' track.id %}">{{ track.name }}: </a>
+                           <span class="text-slate-300 time_span">{{ track.time }}</span><span> minutes</span>
+                        </p>
+                        {% endfor %}
+                     </div>
+                     {% if tracks.1|length == 0 %}
+                     <p class="font-bold text-lg">-</p>
+                     {% endif %}
+                  </div>
+                  {% endfor %}
+                  {% if forloop.counter0 == today_index or forloop.counter == today_index %}
+                  <button class="absolute left-7 bottom-7 bg-slate-700 rounded-sm px-10 py-2 text-sm text-slate-200 transition-all hover:scale-[1.01] hover:bg-slate-600 hover:text-white add_time_track_button" data-date="{{ time.date|date:'Y-m-d' }}">Add New Tracks</button>
+                  {% endif %}
+               </div>
+            </div>
+            {% endfor %}
+         </div>
+         <div class="absolute top-0 right-0 h-full w-[50px] md:w-[100px] flex justify-end items-center bg-gradient-to-l from-slate-900 to-transparent" id="fade_gradient_right"></div>
+      </div>
+   </div>
+</div>
+
+{% include 'time_track/new_tracks.html' %}
+
+{% endblock %}

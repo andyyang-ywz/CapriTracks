@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+{% block title %}Welcome to Capri Tracks{% endblock %}
+
+{% block content %}
+
+{% load static %}
+{% load custom_tags %}
+
+<div class="pt-32 pb-16 border-b border-slate-700">
+   <div class="w-11/12 md:w-5/6 mx-auto flex justify-between">
+      <div>
+         <h1 class="mb-2 font-bold text-5xl">{{ user.username }}</h1>
+         <p class="text-slate-200">{{ user.email }}</p>
+         <p class="text-slate-200 italic">Date Joined: {{ user.date_joined|date:'j F Y' }}</p>
+      </div>
+      <div class="pt-5">
+         <button class="bg-slate-800 border border-slate-600 px-5 py-2 text-sm transition-all hover:bg-sky-900 hover:border-sky-700 hover:shadow-box-hover">Check Time Spent</button>
+      </div>
+   </div>
+</div>
+<div class="w-11/12 md:w-5/6 mx-auto py-16">
+   <div>
+      <h1 class="font-semibold text-2xl md:text-3xl mb-7">Your Productivity Time Progress</h1>
+      <table class="w-full">
+         <thead>
+            <tr class="border-b border-slate-400">
+               <td class="font-semibold p-3">No</td>
+               <td class="font-semibold p-3">Habit Name</td>
+               <td class="font-semibold p-3">Created Date</td>
+               <td class="font-semibold p-3 text-center">Detail</td>
+            </tr>
+         </thead>
+         <tbody>
+            {% for habit in habits %}
+            <tr class="border-b border-slate-700">
+               <td class="p-4">{{ forloop.counter }}</td>
+               <td class="p-4">{{ habit.name }}</td>
+               <td class="p-4">{{ habit.created_at|date:'j F Y' }}</td>
+               <td class="text-center p-4"><a href="{% url 'Habit:tracking_page' user.username habit.name monday|date:'Y-m-d' %}" class="bg-slate-800 border border-slate-600 px-5 py-2 text-sm transition-all hover:bg-[#233046]">Detail</a></td>
+            </tr>
+            {% endfor %}
+         </tbody>
+      </table>
+   </div>
+   <div class="mt-24">
+      <div class="md:flex gap-5 justify-between items-center mb-10">
+         <h1 class="font-semibold text-2xl md:text-3xl mb-4 md:mb-0">Your Productivity Time Progress</h1>
+         <button class="relative flex gap-2 items-center justify-center bg-slate-800 border border-slate-600 rounded-md w-40 md:w-48 py-3 text-sm transition-all hover:bg-[#233046]" id="show_color_info">
+            <img src="{% static 'image/info.png' %}" class="w-5 filter-to-gray">
+            <span class="font-semibold">Color Info</span>
+
+            <div class="absolute top-full left-0 md:left-auto md:right-0 translate-y-3 bg-slate-700 rounded-md p-5 hidden opacity-0 scale-90 transition-all duration-300">
+               <div class="flex gap-2 items-center mb-3 pr-3">
+                  <div class="w-6 h-6 bg-[#22c55e]"></div>
+                  <p>Productive</p>
+               </div>
+               <div class="flex gap-2 items-center mb-3 pr-3">
+                  <div class="w-6 h-6 bg-[#be123c]"></div>
+                  <p>Unproductive</p>
+               </div>
+               <div class="flex gap-2 items-center pr-3">
+                  <div class="w-6 h-6 bg-[#0369a1]"></div>
+                  <p>Neutral</p>
+               </div>
+            </div>
+         </button>
+      </div>
+      <div class="bg-slate-800 rounded-md p-10">
+         <div class="flex justify-between mb-7">
+            <div class="text-left text-xl md:text-2xl font-bold">Include Neutral Time</div>
+            <div class="text-right text-lg sm:text-xl md:text-2xl font-bold">Exclude Neutral Time</div>
+         </div>
+         {% for pie_chart in productivity_progress %}
+         <div class="mb-10">
+            <div class="grid grid-cols-8 items-center justify-center">
+               <div class="col-start-1 col-end-3">
+                  <div class="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-full pie_graph_representation" 
+                  data-productive-percentage="{{ pie_chart.productive_with_neutral }}" 
+                  data-unproductive-percentage="{{ pie_chart.unproductive_with_neutral }}"
+                  data-neutral-percentage="{{ pie_chart.neutral }}"></div>
+               </div>
+               <div class="flex justify-evenly items-center gap-3 col-start-3 col-end-7">
+                  <img src="{% static 'image/arrow.png' %}" class="hidden md:block w-5 h-5 filter-to-gray rotate-180">
+                  <span class="font-semibold text-slate-300 text-[15px] md:text-base lg:text-lg">{{ pie_chart.type }}</span>
+                  <img src="{% static 'image/arrow.png' %}" class="hidden md:block w-5 h-5 filter-to-gray">
+               </div>
+               <div class="col-start-7 col-end-9">
+                  <div class="w-24 h-24 md:w-28 md:h-28 mx-auto rounded-full pie_graph_representation" 
+                  data-productive-percentage="{{ pie_chart.productive_without_neutral }}" 
+                  data-unproductive-percentage="{{ pie_chart.unproductive_without_neutral }}"></div>
+               </div>
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+   </div>
+</div>
+
+{% include 'time_track/new_tracks.html' %}
+
+{% endblock %}
